@@ -1,23 +1,25 @@
 #!/bin/bash
 
-nasm BootLoader.asm -f bin -o BOOT.BIN
+nasm "Assembly/BootLoader.asm" -f bin -o "CU FOS OS/BootLoader.bin" 
 
-nasm KernelEntryPoint.asm -f elf64 -o KernelEntryPoint.o
+nasm "Assembly/KernelEntryPoint.asm" -f elf64 -o "Assembly/KernelEntryPoint.o"
 
-gcc  -c TheKernel.c -o TheKernel.o  -Wall
+gcc  -c 'Kernel/TheKernel.c' -o 'Kernel/TheKernel.o'  -Wall
 
-ld -o TheKernel.bin -Ttext 0x1000 KernelEntryPoint.o TheKernel.o --oformat binary
+gcc  -c 'Hardware/Basic Drivers/VGA.c' -o 'Hardware/Basic Drivers/VGA.o'  -Wall
 
-rm TheKernel.o
-rm KernelEntryPoint.o
+ld -o 'CU FOS OS/Kernel.bin' -Ttext 0x1000 'Assembly/KernelEntryPoint.o' 'Hardware/Basic Drivers/VGA.o' 'Kernel/TheKernel.o' --oformat binary
+
+rm "Kernel/TheKernel.o"
+rm "Assembly/KernelEntryPoint.o"
+rm 'Hardware/Basic Drivers/VGA.o'
 
 #cat BOOT.BIN kernel.bin BOOT.BIN > OS
-cat BOOT.BIN TheKernel.bin BOOT.BIN > CU_FOS_OS
+cat "CU FOS OS/BootLoader.bin" "CU FOS OS/Kernel.bin"  > "CU FOS OS/OS Binary Image"
 
-rm BOOT.BIN
-rm TheKernel.bin
 
-qemu-system-i386  CU_FOS_OS
+
+qemu-system-i386  "CU FOS OS/OS Binary Image"
  
 
 

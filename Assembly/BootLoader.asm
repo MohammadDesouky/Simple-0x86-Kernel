@@ -55,7 +55,7 @@ DriveNumberWhereBIOSLoadedUs : db 0
 WhereKernelWillBeLoaded equ 0x1000
 
 
-%include 'GDT.asm'
+%include 'Assembly/GDT.asm'
 
 [bits 32]
 PMStart:
