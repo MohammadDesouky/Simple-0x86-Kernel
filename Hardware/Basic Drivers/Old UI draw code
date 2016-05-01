@@ -1,0 +1,77 @@
+unsigned int RightMargin=2;
+unsigned int LeftMargin=2;
+unsigned int TopMargin=1;
+unsigned int BottomMargin=1;
+
+
+void PrintRightBorder()
+{
+ PrintVerticalBorder(80-RightMargin-1); 
+}
+void PrintLeftBorder()
+{
+
+  PrintVerticalBorder(LeftMargin+1); 
+}
+
+
+void PrintVerticalBorder(unsigned Position)
+{
+   int i=TopMargin;
+   unsigned p=(TopMargin*80*2) + Position * 2;
+
+   for(;i<25-BottomMargin;i++)
+    {
+        vidmem[p]=179;//222;//'|';
+        vidmem[p+1]=WHITE_TXT;
+ 	 p+=80*2;
+    }
+}
+
+
+
+void PrintTopBorder()
+{
+  PrintHorizontalBorder((TopMargin-1)*80); 
+}
+void PrintBottomBorder()
+{
+  PrintHorizontalBorder((25
+-BottomMargin)*80);
+}
+void PrintHorizontalBorder(unsigned Position)
+{
+   int i=0;
+   unsigned p=(LeftMargin+1+Position)*2;
+   for(;i<78-RightMargin-LeftMargin;i++)
+    {
+	 
+        vidmem[p]=/*196;//254;//196;//*/'-';
+        vidmem[p+1]=WHITE_TXT;
+	 p+=2;
+    }
+}
+
+void CopyToOtherDisplay()
+{
+   CopyMemory(vidmem, (char*)0xA0000,80*25*2);
+   CopyMemory(vidmem, (char*)0xB0000,80*25*2);
+   CopyMemory(vidmem, (char*)0xC0000,80*25*2);
+   CopyMemory(vidmem, (char*)0xD0000,80*25*2);
+}
+void DrawUI() 
+{
+  DrawUIBorder();
+CopyToOtherDisplay();
+}
+void DrawUIBorder()
+{
+  ClearScreen();
+  PrintRightBorder();
+  PrintTopBorder();
+  PrintLeftBorder();
+  PrintBottomBorder();
+  CurrentCursor=(TopMargin-1)*80+LeftMargin+2;
+  MoveCursor();
+}
+

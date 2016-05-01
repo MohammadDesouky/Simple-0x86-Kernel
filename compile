@@ -1,27 +1,54 @@
 #!/bin/bash
 
-nasm "Assembly/BootLoader.asm" -f bin -o "CU FOS OS/BootLoader.bin" 
 
-nasm "Assembly/KernelEntryPoint.asm" -f elf64 -o "Assembly/KernelEntryPoint.o"
+#Assembly Folder
+nasm "Assembly/BootLoader.asm" -f bin -o "CU FOS OS/BootLoader.bin"
+nasm "Assembly/AssemblyToCInterface.asm" -f elf32 -o "Assembly/ASMInterface.o"
+nasm "Assembly/KernelEntryPoint.asm" -f elf32 -o "Assembly/KernelEntryPoint.o"
 
-gcc  -c 'Kernel/TheKernel.c' -o 'Kernel/TheKernel.o'  -Wall
 
-gcc  -c 'Hardware/Basic Drivers/VGA.c' -o 'Hardware/Basic Drivers/VGA.o'  -Wall
+#Library folder
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/Memory.c' -o 'Library/Memory.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/IO.c' -o 'Library/IO.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/String.c' -o 'Library/String.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/RTC.c' -o 'Library/RTC.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/Restart.c' -o 'Library/Restart.o'
 
-ld -o 'CU FOS OS/Kernel.bin' -Ttext 0x1000 'Assembly/KernelEntryPoint.o' 'Hardware/Basic Drivers/VGA.o' 'Kernel/TheKernel.o' --oformat binary
+#Hardware Folder
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/0x86 CPU/GDT.c' -o 'Hardware/0x86 CPU/GDT.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/0x86 CPU/IDT.c' -o 'Hardware/0x86 CPU/IDT.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/0x86 CPU/IRQs.c' -o 'Hardware/0x86 CPU/IRQs.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/0x86 CPU/ISRs.c' -o 'Hardware/0x86 CPU/ISRs.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/0x86 CPU/Timer.c' -o 'Hardware/0x86 CPU/Timer.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/Basic Drivers/USKeyboard.c' -o 'Hardware/Basic Drivers/USKeyboard.o'
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Hardware/Basic Drivers/VGA.c' -o 'Hardware/Basic Drivers/VGA.o'
 
+#Kernel folder
+i686-elf-gcc   -Wall -ffreestanding   -I'./Include' -c 'Kernel/TheKernel.c' -o 'Kernel/TheKernel.o'
+
+
+#===========================APPS=============================
+i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Apps [Kernel Mode]/Main.c' -o 'Apps [Kernel Mode]/Main.o'
+
+
+i686-elf-gcc -o 'CU FOS OS/Kernel.bin'  -T link.ld  'Assembly/KernelEntryPoint.o' 'Assembly/ASMInterface.o' 'Apps [Kernel Mode]/Main.o' 'Library/RTC.o' 'Library/Memory.o' 'Library/IO.o' 'Library/String.o' 'Hardware/0x86 CPU/GDT.o'  'Hardware/0x86 CPU/ISRs.o' 'Hardware/0x86 CPU/IDT.o' 'Hardware/0x86 CPU/IRQs.o'  'Hardware/Basic Drivers/VGA.o' 'Library/Restart.o' 'Hardware/Basic Drivers/USKeyboard.o'  'Hardware/0x86 CPU/Timer.o' 'Kernel/TheKernel.o' -ffreestanding -nostdlib
+
+#-O2 -nostdlib -lgcc
+
+#ld -o 'CU FOS OS/Kernel2.bin' -Ttext 0x1000 'Assembly/KernelEntryPoint.o' 'Assembly/ASMInterface.o'  'Hardware/0x86 CPU/GDT.o' 'Hardware/0x86 CPU/ISRs.o' 'Hardware/0x86 CPU/IDT.o' 'Hardware/0x86 CPU/IRQs.o'  'Hardware/Basic Drivers/VGA.o' 'Kernel/TheKernel.o'
 rm "Kernel/TheKernel.o"
-rm "Assembly/KernelEntryPoint.o"
-rm 'Hardware/Basic Drivers/VGA.o'
+rm  "Assembly/ASMInterface.o" "Assembly/KernelEntryPoint.o"
+rm   'Hardware/Basic Drivers/VGA.o' 'Hardware/0x86 CPU/IDT.o' 'Hardware/0x86 CPU/GDT.o'
+rm   'Hardware/0x86 CPU/IRQs.o' 'Hardware/0x86 CPU/ISRs.o' 'Hardware/0x86 CPU/Timer.o'
+rm   'Hardware/Basic Drivers/USKeyboard.o'
+rm   'Library/Restart.o' 'Apps [Kernel Mode]/Main.o'
+rm   'Library/Memory.o' 'Library/IO.o' 'Library/String.o' 'Library/RTC.o'
 
-#cat BOOT.BIN kernel.bin BOOT.BIN > OS
+
 cat "CU FOS OS/BootLoader.bin" "CU FOS OS/Kernel.bin"  > "CU FOS OS/OS Binary Image"
 
 
 
-qemu-system-i386  "CU FOS OS/OS Binary Image"
- 
+#qemu-system-i386  "CU FOS OS/OS Binary Image" -m 256M
 
-
-
-
+bochs   -f MHM  -q
