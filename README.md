@@ -1,3 +1,15 @@
+Alpha V 0.1.0
+====================================
+-Code become more complex and well structred 
+-Cross compiler (GCC 32-bit elf) must be used to run compile.sh 
+-still using NASM to assembling
+
+
+
+
+
+
+
 Alpha V 0.0.1
 ====================================
 3ashan tsha3'al el code:
