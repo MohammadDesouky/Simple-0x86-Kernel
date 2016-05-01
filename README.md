@@ -2,7 +2,7 @@ Alpha V 0.1.0
 ====================================
 -Code become more complex and well structred 
 -Cross compiler (GCC 32-bit elf) must be used to run compile.sh 
--still using NASM to assembling
+-Still using NASM to assembling
 
 
 
