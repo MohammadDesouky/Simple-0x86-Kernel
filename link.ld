@@ -1,7 +1,7 @@
 OUTPUT_FORMAT("binary")
 ENTRY(start)
 phys  = 0x2000;
-SECTIONS
+SECTIONS 
 {
   .text phys : AT(phys) {
     code = .;
