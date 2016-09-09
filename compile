@@ -5,7 +5,7 @@
 nasm "Assembly/BootLoader.asm" -f bin -o "CU FOS OS/BootLoader.bin"
 nasm "Assembly/AssemblyToCInterface.asm" -f elf32 -o "Assembly/ASMInterface.o"
 nasm "Assembly/KernelEntryPoint.asm" -f elf32 -o "Assembly/KernelEntryPoint.o"
-
+ 
 
 #Library folder
 i686-elf-gcc  -Wall -ffreestanding -I'./Include'  -c 'Library/Memory.c' -o 'Library/Memory.o'
